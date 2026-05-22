@@ -31,19 +31,18 @@ Built with **LangChain, ChromaDB, Ollama, and Streamlit**.
 
 ### 1. Clone the Repository
 
-```bash
 git clone https://github.com/<your-username>/Agentic-RAG.git
 cd Agentic-RAG
 
-**### 2. Install Dependencies**
+**2. Install Dependencies**
 
 pip install langchain langchain-core langchain-community langchain-chroma langchain-ollama streamlit chromadb wikipedia
 
-3. Install Ollama
+**3. Install Ollama**
 
 Download from: https://ollama.com
 
-4. Pull Required Models
+**4. Pull Required Models**
 
 ollama pull llama3.2:3b
 ollama pull mxbai-embed-large
