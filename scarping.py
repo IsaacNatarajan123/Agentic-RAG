@@ -18,7 +18,7 @@ headers = {
     "User-Agent": "Mozilla/5.0"
 }
 
-MAX_PAGES = 20   # 🔥 increase this for more data
+MAX_PAGES = 20   
 
 def get_page_data(url):
     response = requests.get(url, headers=headers)
@@ -27,14 +27,11 @@ def get_page_data(url):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Title
     title = soup.find("h1").text
 
-    # Content
     paragraphs = soup.find_all("p")
     content = " ".join([p.text.strip() for p in paragraphs if p.text.strip()])
 
-    # Get internal links
     links = []
     for a in soup.select("a[href^='/wiki/']"):
         href = a.get("href")
@@ -52,10 +49,6 @@ def get_page_data(url):
         "content": content
     }, links
 
-
-# --------------------------
-# CRAWLER
-# --------------------------
 queue = [urljoin(BASE_URL, p) for p in start_pages]
 
 while queue and len(all_data) < MAX_PAGES:
@@ -72,7 +65,7 @@ while queue and len(all_data) < MAX_PAGES:
 
         if data and len(data["content"]) > 500:
             all_data.append(data)
-            print(f"✅ Saved: {data['title']}")
+            print(f"Saved: {data['title']}")
 
         # Add new links to queue
         for link in links[:10]:  # limit links per page
@@ -82,13 +75,10 @@ while queue and len(all_data) < MAX_PAGES:
         time.sleep(1)  # be respectful
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
 
-# --------------------------
-# SAVE
-# --------------------------
 with open("wikipedia_big_data.json", "w", encoding="utf-8") as f:
     json.dump(all_data, f, indent=4, ensure_ascii=False)
 
-print(f"\n🔥 Done! Total pages scraped: {len(all_data)}")
+print(f"\n Done! Total pages scraped: {len(all_data)}")
