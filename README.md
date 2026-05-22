@@ -64,7 +64,3 @@ Stores in my_vector_db/
 
 ▶️ Step 4: Run Chatbot
 streamlit run chatbot.py
-
-Open:
-
-http://localhost:8501
