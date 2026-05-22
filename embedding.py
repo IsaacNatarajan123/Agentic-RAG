@@ -32,4 +32,4 @@ for i in range(0, len(texts), BATCH_SIZE):
         ids=ids[i:i+BATCH_SIZE]
     )
 
-print(f"\n🔥 Done! Stored {len(chunks)} chunks in '{PERSIST_DIR}'")
+print(f"\n Done! Stored {len(chunks)} chunks in '{PERSIST_DIR}'")
