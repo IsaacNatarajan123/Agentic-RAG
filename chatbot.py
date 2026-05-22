@@ -5,21 +5,13 @@ from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langgraph.prebuilt import create_react_agent
 import streamlit as st
 
-# -------------------------
-# STREAMLIT UI
-# -------------------------
 st.set_page_config(page_title="WikiRAG Assistant", page_icon="🔍")
 st.title("🔍 WikiRAG Assistant")
 
-# -------------------------
-# LOAD AGENT (CACHED)
-# -------------------------
 @st.cache_resource(show_spinner=False)
 def load_agent():
-    # Embeddings
     embeddings_model = OllamaEmbeddings(model="mxbai-embed-large")
 
-    # Vector DB
     db = Chroma(
         persist_directory="./my_vector_db",
         collection_name="wiki_collection",
@@ -30,9 +22,6 @@ def load_agent():
     search_type="mmr",
     search_kwargs={"k": 10})
 
-    # -------------------------
-    # CUSTOM TOOL (NO create_retriever_tool)
-    # -------------------------
     def search_wikipedia(query: str):
         query = query.lower()
         docs = retriever.invoke(query)
@@ -55,10 +44,8 @@ def load_agent():
         description="Search Wikipedia knowledge base and return content with source URLs."
     )
 
-    # LLM
     llm = ChatOllama(model="llama3.1:8b", temperature=0)
 
-    # System Prompt
     system_prompt = SystemMessage(content="""
 You are a strict retrieval-based assistant.
 
@@ -72,13 +59,9 @@ RULES:
 6. NEVER make up information.
 """)
 
-    # Agent
     agent = create_react_agent(llm, [tool], prompt=system_prompt)
     return agent
 
-# -------------------------
-# LOAD AGENT INSTANCE
-# -------------------------
 with st.spinner("Loading model..."):
     try:
         agent_executor = load_agent()
@@ -86,15 +69,9 @@ with st.spinner("Loading model..."):
         st.error(f"Error loading agent: {e}")
         st.stop()
 
-# -------------------------
-# SESSION STATE (CHAT MEMORY)
-# -------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# -------------------------
-# DISPLAY CHAT HISTORY
-# -------------------------
 for message in st.session_state.messages:
     if isinstance(message, HumanMessage):
         with st.chat_message("user"):
@@ -103,9 +80,6 @@ for message in st.session_state.messages:
         with st.chat_message("assistant"):
             st.markdown(message.content)
 
-# -------------------------
-# USER INPUT
-# -------------------------
 user_question = st.chat_input("Ask about Python or LangChain...")
 
 if user_question:
@@ -113,10 +87,8 @@ if user_question:
     with st.chat_message("user"):
         st.markdown(user_question)
 
-    # Save user message
     st.session_state.messages.append(HumanMessage(content=user_question))
 
-    # Generate response
     with st.chat_message("assistant"):
         with st.spinner("Searching knowledge base..."):
             try:
@@ -129,5 +101,4 @@ if user_question:
 
         st.markdown(ai_message)
 
-    # Save AI message
     st.session_state.messages.append(AIMessage(content=ai_message))
